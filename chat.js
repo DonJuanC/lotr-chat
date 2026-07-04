@@ -1,21 +1,96 @@
 import { isValidMessage, parseAIResponse } from "./utils.js";
 import { CHARACTERS } from "./characters.js";
-let messages = [];
-let activeCharacterId = "gandalf";
+
+const ACTIVE_CHARACTER_KEY = "lotr-chat-active-character";
+
+function getStorageKey(characterId) {
+  return `lotr-chat-history-${characterId}`;
+}
+
+export function saveHistoryToStorage() {
+  try {
+    localStorage.setItem(
+      getStorageKey(activeCharacterId),
+      JSON.stringify(messages),
+    );
+  } catch (e) {
+    console.warn("[chat] No se pudo guardar el historial.", e.message);
+  }
+}
+
+export function loadHistoryFromStorage(characterId) {
+  try {
+    const stored = localStorage.getItem(getStorageKey(characterId));
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.warn("[chat] Error leyendo localStorage:", e.message);
+    return [];
+  }
+}
+
+export function hasStoredHistory(characterId) {
+  try {
+    return !!localStorage.getItem(getStorageKey(characterId));
+  } catch {
+    return false;
+  }
+}
+
+export function clearHistory() {
+  messages = [];
+  try {
+    localStorage.removeItem(getStorageKey(activeCharacterId));
+  } catch (e) {
+    console.warn("[chat] No se puede borrar el historial:", e.message);
+  }
+}
+
+let activeCharacterId = localStorage.getItem(ACTIVE_CHARACTER_KEY) || "gandalf";
+let messages = loadHistoryFromStorage(activeCharacterId);
 
 export function setActiveCharacter(characterId) {
   activeCharacterId = characterId;
-  messages = [];
+  localStorage.setItem(ACTIVE_CHARACTER_KEY, characterId);
+  messages = loadHistoryFromStorage(characterId);
 }
 
 export function getActiveCharacterId() {
   return activeCharacterId;
 }
 
-export function appendMessageToDOM(role, content, container) {
+export function appendMessageToDOM(role, content, container, timestamp) {
   const p = document.createElement("p");
   p.className = `message message--${role}`;
   p.textContent = content;
+
+  if (timestamp) {
+    const time = document.createElement("span");
+    time.className = "message__time";
+    time.textContent = new Date(timestamp).toLocaleTimeString("es", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    p.appendChild(time);
+  }
+
+  if (role === "ai") {
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "message__copy";
+    copyBtn.textContent = "📋";
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(content).then(() => {
+        copyBtn.textContent = "✅";
+        setTimeout(() => {
+          copyBtn.textContent = "📋";
+        }, 1500);
+      });
+    });
+    p.appendChild(copyBtn);
+  }
+
   container.appendChild(p);
   container.scrollTop = container.scrollHeight;
 }
@@ -23,7 +98,7 @@ export function appendMessageToDOM(role, content, container) {
 export function renderExistingMessages(container) {
   messages.forEach((msg) => {
     const role = msg.role === "user" ? "user" : "ai";
-    appendMessageToDOM(role, msg.content, container);
+    appendMessageToDOM(role, msg.content, container, msg.timestamp);
   });
 }
 
@@ -31,8 +106,8 @@ export async function handleSendMessage(text, container) {
   if (!isValidMessage(text)) return;
   const trimmed = text.trim();
 
-  messages.push({ role: "user", content: trimmed });
-  appendMessageToDOM("user", trimmed, container);
+  messages.push({ role: "user", content: trimmed, timestamp: Date.now() });
+  appendMessageToDOM("user", trimmed, container, Date.now());
 
   const typingEl = showTypingIndicator(container);
 
@@ -41,8 +116,9 @@ export async function handleSendMessage(text, container) {
     hideTypingIndicator(typingEl);
 
     const replyText = parseAIResponse(data);
-    messages.push({ role: "ai", content: replyText });
-    appendMessageToDOM("ai", replyText, container);
+    messages.push({ role: "ai", content: replyText, timestamp: Date.now() });
+    appendMessageToDOM("ai", replyText, container, Date.now());
+    saveHistoryToStorage();
   } catch (error) {
     hideTypingIndicator(typingEl);
     appendMessageToDOM("ai", `⚠️ ${error.message}`, container);

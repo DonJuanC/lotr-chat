@@ -3,6 +3,8 @@ import {
   renderExistingMessages,
   setActiveCharacter,
   getActiveCharacterId,
+  clearHistory,
+  hasStoredHistory,
 } from "./chat.js";
 import { CHARACTERS } from "./characters.js";
 
@@ -41,6 +43,23 @@ function setupLinkInterception() {
   });
 }
 
+function setupThemeToggle() {
+  const toggleBtn = document.getElementById("theme-toggle");
+  const savedTheme = localStorage.getItem("lotr-chat-theme");
+
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-theme");
+    toggleBtn.textContent = "☀️";
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+    const isDark = document.body.classList.contains("dark-theme");
+    localStorage.setItem("lotr-chat-theme", isDark ? "dark" : "light");
+    toggleBtn.textContent = isDark ? "☀️" : "🌙";
+  });
+}
+
 function renderAbout() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -66,6 +85,10 @@ function renderChat() {
   const character = CHARACTERS.find((c) => c.id === getActiveCharacterId());
   app.innerHTML = `
         <header>${character.emoji} ${character.name}</header>
+        <div class="chat-toolbar">
+          <span>${hasStoredHistory(character.id) ? "💾 Historial guardado" : ""}</span>
+          <button id="clear-history-btn">🗑️ Borrar historial</button>
+        </div>
         <main id="messages-area"></main>
         <div class="input-group">
             <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1"></textarea>
@@ -78,9 +101,23 @@ function renderChat() {
   const inputEl = document.getElementById("topic-input");
   const sendBtn = document.getElementById("generate-btn");
 
-  sendBtn.addEventListener("click", () => {
+  function sendMessage() {
     handleSendMessage(inputEl.value, messagesEl);
     inputEl.value = "";
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+
+  inputEl.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
+
+  document.getElementById("clear-history-btn").addEventListener("click", () => {
+    clearHistory();
+    renderChat();
   });
 }
 
@@ -112,4 +149,5 @@ function renderGallery() {
 }
 
 setupLinkInterception();
+setupThemeToggle();
 router();

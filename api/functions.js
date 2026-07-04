@@ -144,7 +144,7 @@ export default async function handler(req, res) {
       history: geminiHistory,
       config: {
         systemInstruction: character.systemPrompt,
-        maxOutputTokens: 300,
+        maxOutputTokens: 500,
         temperature: 0.8,
       },
     });
