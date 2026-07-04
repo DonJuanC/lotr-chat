@@ -1,5 +1,16 @@
 import { isValidMessage, parseAIResponse } from "./utils.js";
+import { CHARACTERS } from "./characters.js";
 let messages = [];
+let activeCharacterId = "gandalf";
+
+export function setActiveCharacter(characterId) {
+  activeCharacterId = characterId;
+  messages = [];
+}
+
+export function getActiveCharacterId() {
+  return activeCharacterId;
+}
 
 export function appendMessageToDOM(role, content, container) {
   const p = document.createElement("p");
@@ -40,10 +51,11 @@ export async function handleSendMessage(text, container) {
 }
 
 function showTypingIndicator(container) {
+  const character = CHARACTERS.find((c) => c.id === activeCharacterId);
   const p = document.createElement("p");
   p.className = "message message--ai";
   p.id = "typing-indicator";
-  p.textContent = "Gandalf está usando su pipa para responderte...";
+  p.textContent = `${character.name} está escribiendo...`;
   container.appendChild(p);
   container.scrollTop = container.scrollHeight;
   return p;
@@ -57,7 +69,10 @@ export async function sendToAI(messagesToSend) {
   const response = await fetch("/api/functions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: messagesToSend }),
+    body: JSON.stringify({
+      messages: messagesToSend,
+      characterId: activeCharacterId,
+    }),
   });
 
   const data = await response.json();

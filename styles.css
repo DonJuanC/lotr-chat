@@ -73,6 +73,10 @@ main {
   color: #ffffff;
 }
 
+.character-card {
+  cursor: pointer;
+}
+
 @media (min-width: 768px) {
   body {
     max-width: 700px;
