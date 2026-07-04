@@ -18,6 +18,13 @@ const routes = {
 
 function router() {
   const path = window.location.pathname;
+
+  if (path.startsWith("/personaje/")) {
+    const characterId = path.split("/personaje/")[1];
+    renderLore(characterId);
+    return;
+  }
+
   const renderFn = routes[path] || renderNotFound;
   renderFn();
 }
@@ -124,8 +131,13 @@ function renderChat() {
 function renderGallery() {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <section>
-        <h1>Elegí con quién chatear</h1>
+    <section class="hero">
+        <h1 class="hero__title">El Chat de la Tierra Media</h1>
+        <p class="hero__subtitle">Desde la Comarca hasta Isengard: habla con quienes forjaron el destino de un mundo... o lo condenaron.</p>
+        <div class="divider">⚜</div>
+    </section>
+    <section class="gallery">
+        <h2>Elige con quién chatear</h2>
         <div class="gallery-grid">
             ${CHARACTERS.map(
               (c) => `
@@ -133,6 +145,7 @@ function renderGallery() {
                     <span class="character-card__emoji">${c.emoji}</span>
                     <h3>${c.name}</h3>
                     <p>${c.tagline}</p>
+                    <a href="/personaje/${c.id}" data-href="/personaje/${c.id}" class="character-card__lore-link">📖 Su historia</a>
                 </div>
             `,
             ).join("")}
@@ -146,6 +159,44 @@ function renderGallery() {
       navigateTo("/chat");
     });
   });
+
+  document.querySelectorAll(".character-card__lore-link").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      navigateTo(link.getAttribute("href"));
+    });
+  });
+}
+
+function renderLore(characterId) {
+  const app = document.getElementById("app");
+  const character = CHARACTERS.find((c) => c.id === characterId);
+
+  if (!character) {
+    renderNotFound();
+    return;
+  }
+
+  app.innerHTML = `
+    <section class="lore">
+        <span class="lore__emoji">${character.emoji}</span>
+        <h1>${character.name}</h1>
+        <div class="divider">⚜</div>
+        <p class="lore__text">${character.lore}</p>
+        <div class="lore__actions">
+            <button id="chat-with-character-btn">Chatear con ${character.name}</button>
+            <a href="/home" data-href="/home">← Volver a la galería</a>
+        </div>
+    </section>
+`;
+
+  document
+    .getElementById("chat-with-character-btn")
+    .addEventListener("click", () => {
+      setActiveCharacter(character.id);
+      navigateTo("/chat");
+    });
 }
 
 setupLinkInterception();

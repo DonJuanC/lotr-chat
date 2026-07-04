@@ -163,15 +163,53 @@ main {
 }
 
 .input-group button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background: var(--color-user-bg);
-  color: #ffffff;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .input-group button:hover {
   background: var(--color-accent);
+  color: var(--color-header-bg);
+}
+
+.chat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.chat-toolbar button {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.chat-toolbar button:hover {
+  background: var(--color-accent);
+  color: var(--color-header-bg);
 }
 
 section {
@@ -189,7 +227,7 @@ section {
   cursor: pointer;
   background: var(--color-ai-bg);
   border: 1px solid var(--color-border);
-  border-radius: 0.75px;
+  border-radius: 0.75rem;
   padding: 1.5rem 1rem;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
@@ -214,6 +252,118 @@ section {
 .character-card p {
   font-size: 0.85rem;
   opacity: 0.75;
+}
+
+.character-card__lore-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.5rem;
+  width: 100%;
+}
+
+.character-card__lore-link:hover {
+  text-decoration: underline;
+}
+
+.hero {
+  text-align: center;
+  padding-bottom: 0;
+}
+
+.hero__title {
+  font-size: 2rem;
+}
+
+.hero__subtitle {
+  max-width: 500px;
+  margin: 0.75rem auto 0;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-accent);
+  max-width: 300px;
+  margin: 1.25rem auto;
+  font-size: 1.1rem;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-accent);
+  opacity: 0.6;
+}
+
+.gallery {
+  padding-top: 0.5rem;
+}
+
+.gallery h2 {
+  font-family: var(--font-heading);
+  text-align: center;
+}
+
+.lore {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lore__emoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.lore__text {
+  line-height: 1.7;
+  text-align: left;
+}
+
+.lore__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.lore__actions button {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.lore__actions button:hover {
+  background: var(--color-accent);
+  color: var(--color-header-bg);
+}
+
+.lore__actions a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.lore__actions a:hover {
+  text-decoration: underline;
 }
 
 @media (min-width: 768px) {
@@ -274,6 +424,7 @@ nav a:not(:last-of-type)::after {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 h1,
