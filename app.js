@@ -1,4 +1,4 @@
-import { handleSendMessage } from "./chat.js";
+import { handleSendMessage, renderExistingMessages } from "./chat.js";
 
 const routes = {
   "/": renderHome,
@@ -77,6 +77,7 @@ function renderChat() {
         `;
 
   const messagesEl = document.getElementById("messages-area");
+  renderExistingMessages(messagesEl);
   const inputEl = document.getElementById("topic-input");
   const sendBtn = document.getElementById("generate-btn");
 
