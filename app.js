@@ -16,6 +16,18 @@ const routes = {
   "/about": renderAbout,
 };
 
+function avatarMarkup(character, avatarClass, emojiClass) {
+  return `
+    <img
+      src="/assets/${character.id}.png"
+      alt="${character.name}"
+      class="${avatarClass}"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+    />
+    <span class="${emojiClass}" style="display:none;">${character.emoji}</span>
+  `;
+}
+
 function router() {
   const path = window.location.pathname;
 
@@ -90,16 +102,34 @@ function renderNotFound() {
 function renderChat() {
   const app = document.getElementById("app");
   const character = CHARACTERS.find((c) => c.id === getActiveCharacterId());
+
   app.innerHTML = `
-        <header>${character.emoji} ${character.name}</header>
-        <div class="chat-toolbar">
-          <span>${hasStoredHistory(character.id) ? "💾 Historial guardado" : ""}</span>
-          <button id="clear-history-btn">🗑️ Borrar historial</button>
-        </div>
-        <main id="messages-area"></main>
-        <div class="input-group">
-            <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1"></textarea>
-             <button id="generate-btn">Enviar</button>
+        <div class="chat-layout">
+          <aside class="chat-sidebar">
+            <h2 class="chat-sidebar__title">Personajes</h2>
+            <ul class="chat-sidebar__list">
+              ${CHARACTERS.map(
+                (c) => `
+                <li class="chat-sidebar__item${c.id === character.id ? " chat-sidebar__item--active" : ""}" data-id="${c.id}">
+                  ${avatarMarkup(c, "chat-sidebar__avatar", "chat-sidebar__emoji")}
+                  <span>${c.name}</span>
+                </li>
+              `,
+              ).join("")}
+            </ul>
+          </aside>
+          <div class="chat-main">
+            <header>${avatarMarkup(character, "chat-header__avatar", "chat-header__emoji")} ${character.name}</header>
+            <div class="chat-toolbar">
+              <span>${hasStoredHistory(character.id) ? "💾 Historial guardado" : ""}</span>
+              <button id="clear-history-btn">🗑️ Borrar historial</button>
+            </div>
+            <main id="messages-area"></main>
+            <div class="input-group">
+                <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1"></textarea>
+                 <button id="generate-btn">Enviar</button>
+            </div>
+          </div>
         </div>
         `;
 
@@ -126,6 +156,14 @@ function renderChat() {
     clearHistory();
     renderChat();
   });
+
+  document.querySelectorAll(".chat-sidebar__item").forEach((item) => {
+    item.addEventListener("click", () => {
+      if (item.dataset.id === character.id) return;
+      setActiveCharacter(item.dataset.id);
+      renderChat();
+    });
+  });
 }
 
 function renderGallery() {
@@ -142,7 +180,7 @@ function renderGallery() {
             ${CHARACTERS.map(
               (c) => `
                 <div class="character-card" data-id="${c.id}">
-                    <span class="character-card__emoji">${c.emoji}</span>
+                    ${avatarMarkup(c, "character-card__avatar", "character-card__emoji")}
                     <h3>${c.name}</h3>
                     <p>${c.tagline}</p>
                     <a href="/personaje/${c.id}" data-href="/personaje/${c.id}" class="character-card__lore-link">📖 Su historia</a>
@@ -180,7 +218,7 @@ function renderLore(characterId) {
 
   app.innerHTML = `
     <section class="lore">
-        <span class="lore__emoji">${character.emoji}</span>
+        ${avatarMarkup(character, "lore__avatar", "lore__emoji")}
         <h1>${character.name}</h1>
         <div class="divider">⚜</div>
         <p class="lore__text">${character.lore}</p>

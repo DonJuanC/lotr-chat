@@ -31,7 +31,24 @@ body.dark-theme {
       ellipse at bottom right,
       rgba(74, 63, 107, 0.15),
       transparent 60%
-    );
+    ),
+    linear-gradient(rgba(20, 16, 13, 0.85), rgba(20, 16, 13, 0.85)),
+    url("assets/lotr_map_wallpaper.jpeg");
+  background-size:
+    auto,
+    auto,
+    cover,
+    cover;
+  background-position:
+    center,
+    center,
+    center,
+    center;
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat;
 }
 
 * {
@@ -56,7 +73,24 @@ body {
       ellipse at bottom right,
       rgba(45, 42, 38, 0.08),
       transparent 60%
-    );
+    ),
+    linear-gradient(rgba(248, 241, 224, 0.91), rgba(248, 241, 224, 0.91)),
+    url("assets/lotr_map_wallpaper.jpeg");
+  background-size:
+    auto,
+    auto,
+    cover,
+    cover;
+  background-position:
+    center,
+    center,
+    center,
+    center;
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat;
   background-attachment: fixed;
   color: var(--color-text);
 }
@@ -212,13 +246,69 @@ main {
   color: var(--color-header-bg);
 }
 
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.chat-sidebar {
+  display: none;
+  background: var(--color-ai-bg);
+}
+
+.chat-sidebar__title {
+  font-family: var(--font-heading);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-accent);
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.chat-sidebar__list {
+  list-style: none;
+}
+
+.chat-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 0.35rem;
+  transition: background 0.15s ease;
+}
+
+.chat-sidebar__item:hover {
+  background: var(--color-ai-bg);
+}
+
+.chat-sidebar__item--active {
+  background: var(--color-accent);
+  color: var(--color-header-bg);
+}
+
+.chat-sidebar__emoji {
+  font-size: 1.2rem;
+}
+
 section {
   padding: 1.5rem;
 }
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
@@ -247,6 +337,42 @@ section {
   display: block;
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
+}
+
+.character-card__avatar {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 0.5rem;
+  border: 2px solid var(--color-accent);
+}
+
+.chat-header__avatar,
+.chat-sidebar__avatar {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+.chat-header__avatar {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.4rem;
+  border: 2px solid var(--color-accent);
+}
+
+.lore__avatar {
+  display: block;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 0.5rem;
+  border: 3px solid var(--color-accent);
 }
 
 .character-card p {
@@ -379,11 +505,24 @@ section {
 
 @media (min-width: 1024px) {
   body {
-    max-width: 850px;
+    max-width: 1600px;
   }
 
   header {
     padding: 1.5rem;
+  }
+
+  .chat-layout {
+    flex-direction: row;
+  }
+
+  .chat-sidebar {
+    display: block;
+    width: 260px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+    padding: 1rem;
   }
 }
 
