@@ -61,9 +61,16 @@ export function getActiveCharacterId() {
 }
 
 export function appendMessageToDOM(role, content, container, timestamp) {
-  const p = document.createElement("p");
-  p.className = `message message--${role}`;
-  p.textContent = content;
+  const messageEl = document.createElement("div");
+  messageEl.className = `message message--${role}`;
+
+  const textEl = document.createElement("p");
+  textEl.className = "message__text";
+  textEl.textContent = content;
+  messageEl.appendChild(textEl);
+
+  const meta = document.createElement("div");
+  meta.className = "message__meta";
 
   if (timestamp) {
     const time = document.createElement("span");
@@ -72,7 +79,7 @@ export function appendMessageToDOM(role, content, container, timestamp) {
       hour: "2-digit",
       minute: "2-digit",
     });
-    p.appendChild(time);
+    meta.appendChild(time);
   }
 
   if (role === "ai") {
@@ -88,10 +95,11 @@ export function appendMessageToDOM(role, content, container, timestamp) {
         }, 1500);
       });
     });
-    p.appendChild(copyBtn);
+    meta.appendChild(copyBtn);
   }
 
-  container.appendChild(p);
+  messageEl.appendChild(meta);
+  container.appendChild(messageEl);
   container.scrollTop = container.scrollHeight;
 }
 

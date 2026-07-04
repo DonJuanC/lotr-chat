@@ -1,22 +1,37 @@
 :root {
-  --color-bg: #ffffff;
-  --color-text: #1a1a1a;
+  --font-heading: "Cinzel", serif;
+  --font-body: "EB Garamond", serif;
+  --color-bg: #f8f1e0;
+  --color-text: #2d2a26;
   --color-header-bg: #2d2a26;
   --color-header-text: #f4e9d8;
   --color-user-bg: #4a5568;
   --color-ai-bg: #e8e2d5;
   --color-ai-text: #2d2a26;
-  --color-border: #ccc;
+  --color-border: #c9b896;
+  --color-accent: #a67c1e;
 }
 
 body.dark-theme {
-  --color-bg: #1a1a1a;
-  --color-text: #f4e9d8;
+  --color-bg: #14100d;
+  --color-text: #e8dcc3;
   --color-header-bg: #000000;
-  --color-user-bg: #6b7280;
-  --color-ai-bg: #2d2a26;
-  --color-ai-text: #f4e9d8;
-  --color-border: #444;
+  --color-user-bg: #4a3f6b;
+  --color-ai-bg: #241f1a;
+  --color-ai-text: #e8dcc3;
+  --color-border: #4a3f2e;
+  --color-accent: #d4af37;
+  background-image:
+    radial-gradient(
+      ellipse at top left,
+      rgba(212, 175, 55, 0.06),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      rgba(74, 63, 107, 0.15),
+      transparent 60%
+    );
 }
 
 * {
@@ -29,18 +44,31 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: sans-serif;
-  background: var(--color-bg);
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(
+      ellipse at top left,
+      rgba(166, 124, 30, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      rgba(45, 42, 38, 0.08),
+      transparent 60%
+    );
+  background-attachment: fixed;
   color: var(--color-text);
 }
 
 header {
   padding: 1rem;
-  color: #f4e9d8;
   flex-shrink: 0;
   text-align: center;
+  font-family: var(--font-heading);
   background: var(--color-header-bg);
   color: var(--color-header-text);
+  border-bottom: 3px solid var(--color-accent);
 }
 
 main {
@@ -58,18 +86,61 @@ main {
   padding: 0.65rem 1rem;
   border-radius: 1rem;
   line-height: 1.5;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.message--user::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  right: 0;
+  border: 8px solid transparent;
+  border-top-color: var(--color-user-bg);
+  border-bottom: 0;
+  border-right: 0;
+}
+
+.message--ai::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  border: 8px solid transparent;
+  border-top-color: var(--color-ai-bg);
+  border-bottom: 0;
+  border-left: 0;
 }
 
 .message--user {
   align-self: flex-end;
   background: var(--color-user-bg);
   color: #ffffff;
+  border-bottom-right-radius: 0;
 }
 
 .message--ai {
   align-self: flex-start;
   background: var(--color-ai-bg);
   color: var(--color-ai-text);
+  border-bottom-left-radius: 0;
+}
+
+.message__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  opacity: 0.65;
+}
+
+.message__copy {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 1;
 }
 
 .input-group {
@@ -84,7 +155,7 @@ main {
   flex: 1;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   resize: none;
   font-family: inherit;
   background: var(--color-bg);
@@ -99,8 +170,50 @@ main {
   color: #ffffff;
 }
 
+.input-group button:hover {
+  background: var(--color-accent);
+}
+
+section {
+  padding: 1.5rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
 .character-card {
   cursor: pointer;
+  background: var(--color-ai-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.character-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  border-color: var(--color-accent);
+}
+
+.character-card__emoji {
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.character-card p {
+  font-size: 0.85rem;
+  opacity: 0.75;
 }
 
 @media (min-width: 768px) {
@@ -135,6 +248,25 @@ nav {
 nav a {
   color: #f4e9d8;
   text-decoration: none;
+  font-family: var(--font-heading);
+  letter-spacing: 0.05em;
+}
+
+nav a:not(:last-of-type)::after {
+  content: "❖";
+  margin-left: 1rem;
+  color: var(--color-accent);
+}
+
+#theme-toggle {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
 #app {
@@ -142,4 +274,9 @@ nav a {
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+h1,
+h3 {
+  font-family: var(--font-heading);
 }
