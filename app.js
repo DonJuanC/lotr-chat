@@ -97,7 +97,32 @@ function renderAbout() {
   app.innerHTML = `
         <section>
         <h1>Acerca de este proyecto</h1>
-        <p>SPA para chatear con personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Proyecto Integrador M3 - Henry Full Stack.</p>
+        <div class="about-bento">
+          <div class="bento-item bento-item--what">
+            <h2>¿Qué es esto?</h2>
+            <p>SPA para chatear con personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Proyecto Integrador M3 — Henry Full Stack.</p>
+          </div>
+          <div class="bento-item bento-item--stack">
+            <h3>Stack técnico</h3>
+            <ul>
+              <li>JavaScript vanilla + SPA con History API</li>
+              <li>Vercel Serverless Functions</li>
+              <li>Google Gemini AI (@google/genai)</li>
+              <li>Vitest para testing</li>
+              <li>CSS puro, mobile-first</li>
+            </ul>
+          </div>
+          <div class="bento-item bento-item--characters">
+            <h3>Los 7 personajes</h3>
+            <ul class="bento-character-list">
+              ${CHARACTERS.map((c) => `<li>${c.emoji} ${c.name}</li>`).join("")}
+            </ul>
+          </div>
+          <div class="bento-item bento-item--process">
+            <h3>Proceso con IA</h3>
+            <p>Construido con Claude como tutor: cada línea de código fue escrita a mano, guiada paso a paso — desde el routing hasta la accesibilidad WCAG 2.1 AA.</p>
+          </div>
+        </div>
         </section>
         `;
 }
@@ -257,6 +282,25 @@ function renderGallery() {
       navigateTo(link.getAttribute("href"));
     });
   });
+
+  if ("IntersectionObserver" in window) {
+    const cards = document.querySelectorAll(".character-card");
+    cards.forEach((card) => card.classList.add("reveal-pending"));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove("reveal-pending");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+
+    cards.forEach((card) => observer.observe(card));
+  }
 }
 
 function renderLore(characterId) {

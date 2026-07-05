@@ -338,13 +338,19 @@ section {
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    opacity 0.4s ease;
 }
 
 .character-card:hover {
   transform: translateY(-6px) scale(1.03);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   border-color: var(--color-accent);
+}
+
+.character-card.reveal-pending {
+  opacity: 0;
+  transform: translateY(24px);
 }
 
 .character-card__emoji {
@@ -600,6 +606,62 @@ nav a:not(:last-of-type)::after {
 
 #app.is-transitioning {
   opacity: 0;
+}
+
+.about-bento {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:
+    "what what"
+    "stack characters"
+    "process characters";
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.bento-item {
+  background: var(--color-ai-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.bento-item--what {
+  grid-area: what;
+}
+
+.bento-item--stack {
+  grid-area: stack;
+}
+
+.bento-item--characters {
+  grid-area: characters;
+}
+
+.bento-item--process {
+  grid-area: process;
+}
+
+.bento-item h2,
+.bento-item h3 {
+  font-family: var(--font-heading);
+  margin-bottom: 0.5rem;
+}
+
+.bento-item ul {
+  list-style: none;
+  line-height: 1.8;
+}
+
+@media (max-width: 767px) {
+  .about-bento {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "what"
+      "stack"
+      "characters"
+      "process";
+  }
 }
 
 .suggested-prompts {
