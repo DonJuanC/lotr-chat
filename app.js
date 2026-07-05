@@ -69,6 +69,9 @@ function setupThemeToggle() {
   if (savedTheme === "dark") {
     document.body.classList.add("dark-theme");
     toggleBtn.textContent = "☀️";
+    toggleBtn.setAttribute("aria-label", "Cambiar a modo claro");
+  } else {
+    toggleBtn.setAttribute("aria-label", "Cambiar a modo oscuro");
   }
 
   toggleBtn.addEventListener("click", () => {
@@ -76,6 +79,10 @@ function setupThemeToggle() {
     const isDark = document.body.classList.contains("dark-theme");
     localStorage.setItem("lotr-chat-theme", isDark ? "dark" : "light");
     toggleBtn.textContent = isDark ? "☀️" : "🌙";
+    toggleBtn.setAttribute(
+      "aria-label",
+      isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
+    );
   });
 }
 
@@ -110,7 +117,7 @@ function renderChat() {
             <ul class="chat-sidebar__list">
               ${CHARACTERS.map(
                 (c) => `
-                <li class="chat-sidebar__item${c.id === character.id ? " chat-sidebar__item--active" : ""}" data-id="${c.id}">
+                <li class="chat-sidebar__item${c.id === character.id ? " chat-sidebar__item--active" : ""}" data-id="${c.id}" role="button" tabindex="0">
                   ${avatarMarkup(c, "chat-sidebar__avatar", "chat-sidebar__emoji")}
                   <span>${c.name}</span>
                 </li>
@@ -119,14 +126,15 @@ function renderChat() {
             </ul>
           </aside>
           <div class="chat-main">
+            <h1 class="sr-only">${character.name}</h1>
             <header>${avatarMarkup(character, "chat-header__avatar", "chat-header__emoji")} ${character.name}</header>
             <div class="chat-toolbar">
               <span>${hasStoredHistory(character.id) ? "💾 Historial guardado" : ""}</span>
               <button id="clear-history-btn">🗑️ Borrar historial</button>
             </div>
-            <main id="messages-area"></main>
+            <main id="messages-area" role="log" aria-live="polite"></main>
             <div class="input-group">
-                <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1"></textarea>
+                <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1" aria-label="Mensaje para ${character.name}"></textarea>
                  <button id="generate-btn">Enviar</button>
             </div>
           </div>
@@ -158,10 +166,19 @@ function renderChat() {
   });
 
   document.querySelectorAll(".chat-sidebar__item").forEach((item) => {
-    item.addEventListener("click", () => {
+    function selectSidebarCharacter() {
       if (item.dataset.id === character.id) return;
       setActiveCharacter(item.dataset.id);
       renderChat();
+    }
+
+    item.addEventListener("click", selectSidebarCharacter);
+
+    item.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectSidebarCharacter();
+      }
     });
   });
 }
@@ -172,14 +189,14 @@ function renderGallery() {
     <section class="hero">
         <h1 class="hero__title">El Chat de la Tierra Media</h1>
         <p class="hero__subtitle">Desde la Comarca hasta Isengard: habla con quienes forjaron el destino de un mundo... o lo condenaron.</p>
-        <div class="divider">⚜</div>
+        <div class="divider" aria-hidden="true">⚜</div>
     </section>
     <section class="gallery">
         <h2>Elige con quién chatear</h2>
         <div class="gallery-grid">
             ${CHARACTERS.map(
               (c) => `
-                <div class="character-card" data-id="${c.id}">
+                <div class="character-card" data-id="${c.id}" role="button" tabindex="0">
                     ${avatarMarkup(c, "character-card__avatar", "character-card__emoji")}
                     <h3>${c.name}</h3>
                     <p>${c.tagline}</p>
@@ -192,9 +209,19 @@ function renderGallery() {
 `;
 
   document.querySelectorAll(".character-card").forEach((card) => {
-    card.addEventListener("click", () => {
+    function selectCharacter() {
       setActiveCharacter(card.dataset.id);
       navigateTo("/chat");
+    }
+
+    card.addEventListener("click", selectCharacter);
+
+    card.addEventListener("keydown", (event) => {
+      if (event.target !== card) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectCharacter();
+      }
     });
   });
 
@@ -220,7 +247,7 @@ function renderLore(characterId) {
     <section class="lore">
         ${avatarMarkup(character, "lore__avatar", "lore__emoji")}
         <h1>${character.name}</h1>
-        <div class="divider">⚜</div>
+        <div class="divider" aria-hidden="true">⚜</div>
         <p class="lore__text">${character.lore}</p>
         <div class="lore__actions">
             <button id="chat-with-character-btn">Chatear con ${character.name}</button>

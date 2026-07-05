@@ -87,11 +87,14 @@ export function appendMessageToDOM(role, content, container, timestamp) {
     copyBtn.type = "button";
     copyBtn.className = "message__copy";
     copyBtn.textContent = "📋";
+    copyBtn.setAttribute("aria-label", "Copiar respuesta");
     copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(content).then(() => {
         copyBtn.textContent = "✅";
+        copyBtn.setAttribute("aria-label", "Copiado");
         setTimeout(() => {
           copyBtn.textContent = "📋";
+          copyBtn.setAttribute("aria-label", "Copiar respuesta");
         }, 1500);
       });
     });

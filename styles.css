@@ -10,6 +10,7 @@
   --color-ai-text: #2d2a26;
   --color-border: #c9b896;
   --color-accent: #a67c1e;
+  --color-accent-text: #7a5c17;
 }
 
 body.dark-theme {
@@ -21,6 +22,7 @@ body.dark-theme {
   --color-ai-text: #e8dcc3;
   --color-border: #4a3f2e;
   --color-accent: #d4af37;
+  --color-accent-text: #d4af37;
   background-image:
     radial-gradient(
       ellipse at top left,
@@ -170,6 +172,11 @@ main {
 }
 
 .message__copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
   border: none;
   background: none;
   cursor: pointer;
@@ -227,7 +234,8 @@ main {
 }
 
 .chat-toolbar button {
-  padding: 0.35rem 0.75rem;
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
   border: 1px solid var(--color-accent);
   border-radius: 0.5rem;
   background: transparent;
@@ -384,7 +392,7 @@ section {
   display: inline-block;
   margin-top: 0.75rem;
   font-size: 0.8rem;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   text-decoration: none;
   border-top: 1px solid var(--color-border);
   padding-top: 0.5rem;
@@ -484,7 +492,7 @@ section {
 }
 
 .lore__actions a {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   text-decoration: none;
 }
 
@@ -535,6 +543,9 @@ nav {
 }
 
 nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.25rem;
   color: #f4e9d8;
   text-decoration: none;
   font-family: var(--font-heading);
@@ -552,10 +563,22 @@ nav a:not(:last-of-type)::after {
   background: transparent;
   border: 1px solid var(--color-accent);
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
   cursor: pointer;
   font-size: 1rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 #app {
