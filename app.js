@@ -100,7 +100,7 @@ function renderAbout() {
         <div class="about-bento">
           <div class="bento-item bento-item--what">
             <h2>¿Qué es esto?</h2>
-            <p>SPA para chatear con personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI.</p>
+            <p>SPA para chatear con personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Construida para afianzar diseño responsive, SPA con History API, JavaScript asíncrono, integración con IA y despliegue serverless.</p>
           </div>
           <div class="bento-item bento-item--stack">
             <h3>Stack técnico</h3>
@@ -118,9 +118,10 @@ function renderAbout() {
               ${CHARACTERS.map((c) => `<li>${c.emoji} ${c.name}</li>`).join("")}
             </ul>
           </div>
-          <div class="bento-item bento-item--process">
-            <h3>Proceso con IA</h3>
-            <p>Construido con Claude como tutor: cada línea de código fue escrita a mano, guiada paso a paso — desde el routing hasta la accesibilidad WCAG 2.1 AA.</p>
+          <div class="bento-item bento-item--credits">
+            <h3>Créditos</h3>
+            <p>JuanCamilo Castellanos — <a href="https://github.com/DonJuanC" target="_blank" rel="noopener noreferrer">github.com/DonJuanC</a></p>
+            <p class="bento-disclaimer">Proyecto académico sin fines comerciales. Los personajes y el universo de la Tierra Media son propiedad de The Tolkien Estate y sus respectivos titulares de derechos; este proyecto no está afiliado ni respaldado por ellos.</p>
           </div>
         </div>
         </section>

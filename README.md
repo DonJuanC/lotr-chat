@@ -1,6 +1,8 @@
 # El Chat de la Tierra Media
 
-SPA para chatear con 7 personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Proyecto Integrador — Módulo 3, Henry Full Stack.
+SPA para chatear con 7 personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Construido para afianzar diseño responsive mobile-first, SPA con History API, JavaScript asíncrono y consumo de APIs, integración con inteligencia artificial, y despliegue con Serverless Functions.
+
+**Autor:** Juan Camilo Castellanos — [github.com/DonJuanC](https://github.com/DonJuanC)
 
 **Demo en vivo:** https://lotr-chat.vercel.app
 
@@ -85,3 +87,7 @@ Registro detallado (prompts, decisiones, iteraciones) disponible en Notion: [Uso
 
 **Vista mobile**
 ![Vista mobile](screenshots/05-mobile.png)
+
+## Disclaimer
+
+Este es un proyecto académico y educativo, sin fines comerciales, construido para afianzar los conceptos de desarrollo web mencionados arriba. Los personajes, nombres y el universo de la Tierra Media son propiedad de The Tolkien Estate, y sus respectivos titulares de derechos (incluyendo adaptaciones audiovisuales de terceros). Este proyecto no está afiliado, respaldado ni patrocinado por ninguno de ellos; se usa el material únicamente con fines de aprendizaje y demostración técnica.

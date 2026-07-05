@@ -628,7 +628,7 @@ nav a:not(:last-of-type)::after {
   grid-template-areas:
     "what what"
     "stack characters"
-    "process characters";
+    "credits characters";
   gap: 1rem;
   margin-top: 1.5rem;
 }
@@ -652,8 +652,14 @@ nav a:not(:last-of-type)::after {
   grid-area: characters;
 }
 
-.bento-item--process {
-  grid-area: process;
+.bento-item--credits {
+  grid-area: credits;
+}
+
+.bento-disclaimer {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-top: 0.5rem;
 }
 
 .bento-item h2,
@@ -674,7 +680,7 @@ nav a:not(:last-of-type)::after {
       "what"
       "stack"
       "characters"
-      "process";
+      "credits";
   }
 }
 
