@@ -63,6 +63,9 @@ body.dark-theme {
   box-sizing: border-box;
 }
 
+/* Gradientes en capas: dos radial-gradient decorativos + un overlay
+   semitransparente + el mapa de fondo, todos apilados en background-image.
+   El primer valor listado queda "arriba" de los demás. */
 body {
   display: flex;
   flex-direction: column;
@@ -130,6 +133,8 @@ main {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+/* Pseudo-elemento ::after: dibuja la "colita" del globo de chat con
+   bordes transparentes en 3 lados y color solo en uno, sin usar imágenes. */
 .message--user::after {
   content: "";
   position: absolute;
@@ -327,6 +332,8 @@ section {
   margin-top: 1.5rem;
 }
 
+/* transition + transform: anima el estado :hover (más abajo) y también
+   el fin del scroll-reveal que maneja IntersectionObserver en app.js. */
 .character-card {
   cursor: pointer;
   background: var(--color-ai-bg);
@@ -546,6 +553,9 @@ section {
   }
 }
 
+/* Glassmorphism: fondo semitransparente (--color-glass-bg) + backdrop-filter
+   desenfoca lo que queda detrás (el mapa), en vez de taparlo con un color
+   sólido. -webkit- es el prefijo que necesita Safari para lo mismo. */
 nav {
   display: flex;
   gap: 1rem;
@@ -608,6 +618,10 @@ nav a:not(:last-of-type)::after {
   opacity: 0;
 }
 
+/* Bento grid: grid-template-areas nombra cada bloque y decide su
+   posición dibujando el layout como texto. "characters" se repite en
+   dos filas, por eso ocupa una card grande y desigual (asimetría típica
+   de un bento grid) en vez de una grilla pareja. */
 .about-bento {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

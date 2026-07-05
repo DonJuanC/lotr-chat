@@ -100,7 +100,7 @@ function renderAbout() {
         <div class="about-bento">
           <div class="bento-item bento-item--what">
             <h2>¿Qué es esto?</h2>
-            <p>SPA para chatear con personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Proyecto Integrador M3 — Henry Full Stack.</p>
+            <p>SPA para chatear con personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI.</p>
           </div>
           <div class="bento-item bento-item--stack">
             <h3>Stack técnico</h3>
@@ -283,6 +283,9 @@ function renderGallery() {
     });
   });
 
+  // Scroll-reveal: IntersectionObserver avisa cuando una card entra en
+  // pantalla, sin escuchar el evento "scroll" a mano. Si el navegador no
+  // soporta la API, esta clase nunca se agrega y las cards quedan visibles.
   if ("IntersectionObserver" in window) {
     const cards = document.querySelectorAll(".character-card");
     cards.forEach((card) => card.classList.add("reveal-pending"));
