@@ -29,16 +29,22 @@ function avatarMarkup(character, avatarClass, emojiClass) {
 }
 
 function router() {
-  const path = window.location.pathname;
+  const app = document.getElementById("app");
+  app.classList.add("is-transitioning");
 
-  if (path.startsWith("/personaje/")) {
-    const characterId = path.split("/personaje/")[1];
-    renderLore(characterId);
-    return;
-  }
+  setTimeout(() => {
+    const path = window.location.pathname;
 
-  const renderFn = routes[path] || renderNotFound;
-  renderFn();
+    if (path.startsWith("/personaje/")) {
+      const characterId = path.split("/personaje/")[1];
+      renderLore(characterId);
+    } else {
+      const renderFn = routes[path] || renderNotFound;
+      renderFn();
+    }
+
+    app.classList.remove("is-transitioning");
+  }, 150);
 }
 
 function navigateTo(path) {
@@ -143,6 +149,25 @@ function renderChat() {
 
   const messagesEl = document.getElementById("messages-area");
   renderExistingMessages(messagesEl);
+
+  if (!hasStoredHistory(character.id)) {
+    const suggestions = document.createElement("div");
+    suggestions.className = "suggested-prompts";
+    suggestions.innerHTML = character.suggestedPrompts
+      .map(
+        (q) => `<button class="suggested-prompt" type="button">${q}</button>`,
+      )
+      .join("");
+    messagesEl.appendChild(suggestions);
+
+    suggestions.querySelectorAll(".suggested-prompt").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        handleSendMessage(btn.textContent, messagesEl);
+        suggestions.remove();
+      });
+    });
+  }
+
   const inputEl = document.getElementById("topic-input");
   const sendBtn = document.getElementById("generate-btn");
 
