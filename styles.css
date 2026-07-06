@@ -63,6 +63,27 @@ body.dark-theme {
   box-sizing: border-box;
 }
 
+/* Transición suave al cambiar de tema: en vez de que los colores salten
+   de golpe, estos elementos (los que más cambian entre claro/oscuro)
+   interpolan background/color/border al alternar la clase .dark-theme. */
+body,
+nav,
+header,
+.chat-toolbar,
+.chat-rail,
+.chat-lore-panel,
+.chat-main,
+.message,
+.bento-item,
+.input-group textarea,
+#messages-area {
+  transition:
+    background-color 0.35s ease,
+    background-image 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
 /* Gradientes en capas: dos radial-gradient decorativos + un overlay
    semitransparente + el mapa de fondo, todos apilados en background-image.
    El primer valor listado queda "arriba" de los demás. */
@@ -124,6 +145,17 @@ main {
   padding: 1rem;
 }
 
+/* Tinte sutil por personaje: un radial-gradient muy transparente con el
+   color del personaje activo (--character-accent-rgb, inyectado desde
+   app.js), apenas visible detrás de las burbujas. */
+#messages-area {
+  background-image: radial-gradient(
+    ellipse at top,
+    rgba(var(--character-accent-rgb, 166, 124, 30), 0.07),
+    transparent 65%
+  );
+}
+
 .message {
   max-width: 80%;
   padding: 0.65rem 1rem;
@@ -131,6 +163,11 @@ main {
   line-height: 1.5;
   position: relative;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.message__text {
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 /* Pseudo-elemento ::after: dibuja la "colita" del globo de chat con
@@ -159,14 +196,26 @@ main {
 
 .message--user {
   align-self: flex-end;
-  background: var(--color-user-bg);
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(var(--color-user-bg), var(--color-user-bg));
   color: #ffffff;
   border-bottom-right-radius: 0;
 }
 
+/* La burbuja de IA suma una tercera capa: un tinte del color del
+   personaje activo sobre --color-ai-bg. Al ser una capa más (no un color
+   fijo), reacciona sola al cambiar de tema — nunca hay que recalcular
+   nada en JS cuando se alterna claro/oscuro. */
 .message--ai {
   align-self: flex-start;
-  background: var(--color-ai-bg);
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.05)),
+    linear-gradient(
+      rgba(var(--character-accent-rgb, 166, 124, 30), 0.16),
+      rgba(var(--character-accent-rgb, 166, 124, 30), 0.16)
+    ),
+    linear-gradient(var(--color-ai-bg), var(--color-ai-bg));
   color: var(--color-ai-text);
   border-bottom-left-radius: 0;
 }
@@ -208,6 +257,7 @@ main {
   border: 1px solid var(--color-border);
   resize: none;
   font-family: inherit;
+  font-size: 1rem;
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -227,7 +277,9 @@ main {
 }
 
 .input-group button:hover {
-  background: var(--color-accent);
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.12)),
+    linear-gradient(var(--color-accent), var(--color-accent));
   color: var(--color-header-bg);
 }
 
@@ -261,11 +313,23 @@ main {
 }
 
 .chat-toolbar button:hover {
-  background: var(--color-accent);
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.12)),
+    linear-gradient(var(--color-accent), var(--color-accent));
   color: var(--color-header-bg);
 }
 
 .chat-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Fila de columnas (rail + chat + panel de historia). El header vive
+   fuera de esto, como barra de ancho completo, para no verse encajonado
+   dentro de una sola columna (efecto "frameset" de la web vieja). */
+.chat-columns {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -279,46 +343,276 @@ main {
   min-height: 0;
 }
 
-.chat-sidebar {
+.chat-rail {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-ai-bg);
+}
+
+.chat-rail__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  padding: 1.25rem 0;
+}
+
+.chat-rail__item {
+  position: relative;
+  display: block;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  padding: 0.2rem;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  transition: transform 0.15s ease;
+}
+
+.chat-rail__item:hover {
+  transform: scale(1.08);
+}
+
+.chat-rail__item--active {
+  border-color: var(--character-accent, var(--color-accent));
+  background: radial-gradient(
+    circle,
+    rgba(var(--character-accent-rgb, 166, 124, 30), 0.22),
+    transparent 70%
+  );
+}
+
+.chat-rail__emoji {
+  font-size: 2rem;
+}
+
+/* Retratos "en pergamino" por defecto (desaturados + un toque sepia) y a
+   full color en :hover/:focus-visible/activo — mismo filtro para la
+   imagen real y el emoji de respaldo, así el efecto es igual en ambos. */
+.chat-rail__avatar,
+.chat-rail__emoji {
+  filter: grayscale(0.85) sepia(0.35) contrast(0.95);
+  transition: filter 0.25s ease;
+}
+
+.chat-rail__item:hover .chat-rail__avatar,
+.chat-rail__item:hover .chat-rail__emoji,
+.chat-rail__item:focus-visible .chat-rail__avatar,
+.chat-rail__item:focus-visible .chat-rail__emoji,
+.chat-rail__item--active .chat-rail__avatar,
+.chat-rail__item--active .chat-rail__emoji {
+  filter: none;
+}
+
+/* Tooltip dinámico: en vez de un ::after posicionado dentro del riel
+   (quedaba recortado por el overflow del contenedor scrolleable), un
+   único elemento con position:fixed se reposiciona por JS según el
+   avatar activo. Al ser fixed, ignora cualquier overflow ancestro. */
+.chat-rail__tooltip {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 200px;
+  background: var(--color-header-bg);
+  color: var(--color-header-text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  white-space: normal;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) translateX(0);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  z-index: 50;
+}
+
+.chat-rail__tooltip strong {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.chat-rail__tooltip span {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  opacity: 0.85;
+}
+
+.chat-rail__tooltip--visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(6px);
+}
+
+.chat-lore-panel {
   display: none;
   background: var(--color-ai-bg);
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
 }
 
-.chat-sidebar__title {
-  font-family: var(--font-heading);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-accent);
-  font-size: 1rem;
-  opacity: 0.9;
+.chat-lore-panel__header {
+  text-align: center;
+  padding-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--character-accent, var(--color-accent));
 }
 
-.chat-sidebar__list {
-  list-style: none;
+/* Retrato tipo "cuadro enmarcado": cuadrado con esquinas suaves en vez
+   de círculo, y un marco en degradado (mismo truco de capas: un fondo
+   sólido para el contenido + un degradado detrás, recortados distinto
+   con background-clip) en vez de border-image. */
+.chat-lore-panel__avatar {
+  width: 100%;
+  max-width: 7rem;
+  height: 7rem;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  margin: 0 auto 0.5rem;
+  display: block;
+  border: 4px solid transparent;
+  background-image:
+    linear-gradient(var(--color-ai-bg), var(--color-ai-bg)),
+    linear-gradient(
+      135deg,
+      var(--character-accent, var(--color-accent)),
+      var(--color-accent-text)
+    );
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
-.chat-sidebar__item {
+.chat-lore-panel__emoji {
+  width: 100%;
+  max-width: 7rem;
+  height: 7rem;
+  border-radius: 0.75rem;
+  margin: 0 auto 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: 0.5rem;
+  justify-content: center;
+  font-size: 2.5rem;
+  border: 4px solid transparent;
+  background-image:
+    linear-gradient(var(--color-ai-bg), var(--color-ai-bg)),
+    linear-gradient(
+      135deg,
+      var(--character-accent, var(--color-accent)),
+      var(--color-accent-text)
+    );
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}
+
+.chat-lore-panel__header h2 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+}
+
+.chat-lore-panel__tagline {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin-top: 0.25rem;
+}
+
+/* Acordeón: patrón de disclosure (botón con aria-expanded/aria-controls +
+   contenido con atributo hidden), sin librería. */
+.lore-section {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lore-section__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 0.25rem;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--color-text);
   cursor: pointer;
-  margin-bottom: 0.35rem;
-  transition: background 0.15s ease;
+  min-height: 44px;
 }
 
-.chat-sidebar__item:hover {
-  background: var(--color-ai-bg);
+.lore-section__icon {
+  transition: transform 0.2s ease;
 }
 
-.chat-sidebar__item--active {
-  background: var(--color-accent);
+.lore-section__trigger[aria-expanded="true"] .lore-section__icon {
+  transform: rotate(180deg);
+}
+
+.lore-section__content {
+  padding: 0 0.25rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.lore-section__prompts {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lore-section__prompt {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--color-accent-text);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  cursor: pointer;
+  min-height: 44px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.lore-section__prompt:hover {
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.12)),
+    linear-gradient(var(--color-accent), var(--color-accent));
   color: var(--color-header-bg);
 }
 
-.chat-sidebar__emoji {
-  font-size: 1.2rem;
+.chat-lore-panel__link {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-accent-text);
+}
+
+.chat-header__lore-link {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-header-text);
+  border-bottom: 1px solid currentColor;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.chat-layout > header {
+  position: relative;
 }
 
 section {
@@ -376,20 +670,12 @@ section {
   border: 2px solid var(--color-accent);
 }
 
-.chat-header__avatar,
-.chat-sidebar__avatar {
-  width: 1.6rem;
-  height: 1.6rem;
+.chat-rail__avatar {
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   object-fit: cover;
   vertical-align: middle;
-}
-
-.chat-header__avatar {
-  width: 2rem;
-  height: 2rem;
-  margin-right: 0.4rem;
-  border: 2px solid var(--color-accent);
 }
 
 .lore__avatar {
@@ -429,6 +715,10 @@ section {
 
 .hero__title {
   font-size: 2rem;
+  background-image: linear-gradient(135deg, var(--color-accent), var(--color-accent-text));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .hero__subtitle {
@@ -506,7 +796,9 @@ section {
 }
 
 .lore__actions button:hover {
-  background: var(--color-accent);
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.12)),
+    linear-gradient(var(--color-accent), var(--color-accent));
   color: var(--color-header-bg);
 }
 
@@ -540,16 +832,42 @@ section {
   }
 
   .chat-layout {
-    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
   }
 
-  .chat-sidebar {
-    display: block;
-    width: 260px;
+  .chat-layout > header {
+    border-radius: 0.75rem;
+  }
+
+  .chat-columns {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .chat-rail {
+    display: flex;
+    width: 7rem;
     flex-shrink: 0;
-    border-right: 1px solid var(--color-border);
     overflow-y: auto;
-    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .chat-lore-panel {
+    display: flex;
+    width: 300px;
+    flex-shrink: 0;
+    border-radius: 0.75rem;
+  }
+
+  .chat-main {
+    background: var(--color-ai-bg);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .chat-header__lore-link {
+    display: none;
   }
 }
 
@@ -560,6 +878,8 @@ nav {
   display: flex;
   gap: 1rem;
   padding: 1rem;
+  margin: 1rem 1rem 0;
+  border-radius: 0.75rem;
   flex-shrink: 0;
   background: var(--color-glass-bg);
   backdrop-filter: blur(12px);
@@ -583,6 +903,7 @@ nav a:not(:last-of-type)::after {
 }
 
 #theme-toggle {
+  position: relative;
   margin-left: auto;
   background: transparent;
   border: 1px solid var(--color-accent);
@@ -591,6 +912,70 @@ nav a:not(:last-of-type)::after {
   height: 2.75rem;
   cursor: pointer;
   font-size: 1rem;
+}
+
+/* Tooltip del botón de tema: el aria-label ya lo anuncia a lectores de
+   pantalla, pero un botón de solo ícono también necesita una pista
+   visible al pasar el cursor o el foco por teclado. Usa attr(aria-label)
+   para no repetir el texto en dos lugares. */
+#theme-toggle::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--color-header-bg);
+  color: var(--color-header-text);
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  z-index: 60;
+}
+
+#theme-toggle:hover::after,
+#theme-toggle:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Toast genérico: confirma acciones (cambio de tema, borrar historial...)
+   con un mensaje que aparece y se desvanece solo. role="status" +
+   aria-live="polite" en el HTML hace que los lectores de pantalla lo
+   anuncien apenas cambia su texto. */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--color-header-bg);
+  color: var(--color-header-text);
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  z-index: 100;
+}
+
+.toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .sr-only {
@@ -706,7 +1091,9 @@ nav a:not(:last-of-type)::after {
 }
 
 .suggested-prompt:hover {
-  background: var(--color-accent);
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.12)),
+    linear-gradient(var(--color-accent), var(--color-accent));
   color: var(--color-header-bg);
 }
 

@@ -16,6 +16,21 @@ const routes = {
   "/about": renderAbout,
 };
 
+// Toast genérico (usado por el cambio de tema y por acciones como borrar
+// historial): role="status" + aria-live="polite" en el HTML hace que se
+// anuncie a lectores de pantalla apenas cambia el texto, y para quien ve
+// la pantalla aparece y se desvanece solo.
+let toastTimeout;
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("toast--visible");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove("toast--visible");
+  }, 2200);
+}
+
 function avatarMarkup(character, avatarClass, emojiClass) {
   return `
     <img
@@ -72,23 +87,27 @@ function setupThemeToggle() {
   const toggleBtn = document.getElementById("theme-toggle");
   const savedTheme = localStorage.getItem("lotr-chat-theme");
 
+  function applyLabel(isDark) {
+    toggleBtn.textContent = isDark ? "☀️" : "🌙";
+    toggleBtn.setAttribute(
+      "aria-label",
+      isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
+    );
+  }
+
   if (savedTheme === "dark") {
     document.body.classList.add("dark-theme");
-    toggleBtn.textContent = "☀️";
-    toggleBtn.setAttribute("aria-label", "Cambiar a modo claro");
+    applyLabel(true);
   } else {
-    toggleBtn.setAttribute("aria-label", "Cambiar a modo oscuro");
+    applyLabel(false);
   }
 
   toggleBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-theme");
     const isDark = document.body.classList.contains("dark-theme");
     localStorage.setItem("lotr-chat-theme", isDark ? "dark" : "light");
-    toggleBtn.textContent = isDark ? "☀️" : "🌙";
-    toggleBtn.setAttribute(
-      "aria-label",
-      isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
-    );
+    applyLabel(isDark);
+    showToast(isDark ? "Modo oscuro activado" : "Modo claro activado");
   });
 }
 
@@ -143,32 +162,71 @@ function renderChat() {
   const character = CHARACTERS.find((c) => c.id === getActiveCharacterId());
 
   app.innerHTML = `
-        <div class="chat-layout">
-          <aside class="chat-sidebar">
-            <h2 class="chat-sidebar__title">Personajes</h2>
-            <ul class="chat-sidebar__list">
-              ${CHARACTERS.map(
-                (c) => `
-                <li class="chat-sidebar__item${c.id === character.id ? " chat-sidebar__item--active" : ""}" data-id="${c.id}" role="button" tabindex="0">
-                  ${avatarMarkup(c, "chat-sidebar__avatar", "chat-sidebar__emoji")}
-                  <span>${c.name}</span>
-                </li>
-              `,
-              ).join("")}
-            </ul>
-          </aside>
-          <div class="chat-main">
-            <h1 class="sr-only">${character.name}</h1>
-            <header>${avatarMarkup(character, "chat-header__avatar", "chat-header__emoji")} ${character.name}</header>
-            <div class="chat-toolbar">
-              <span>${hasStoredHistory(character.id) ? "💾 Historial guardado" : ""}</span>
-              <button id="clear-history-btn">🗑️ Borrar historial</button>
+        <div class="chat-layout" style="--character-accent: ${character.accent}; --character-accent-rgb: ${character.accentRgb};">
+          <h1 class="sr-only">${character.name}</h1>
+          <header>
+            ${character.name}
+            <a href="/personaje/${character.id}" data-href="/personaje/${character.id}" class="chat-header__lore-link">Historia</a>
+          </header>
+          <div class="chat-columns">
+            <nav class="chat-rail" aria-label="Elegir personaje">
+              <ul class="chat-rail__list">
+                ${CHARACTERS.map(
+                  (c) => `
+                  <li>
+                    <button
+                      type="button"
+                      class="chat-rail__item${c.id === character.id ? " chat-rail__item--active" : ""}"
+                      data-id="${c.id}"
+                      data-name="${c.name}"
+                      data-tagline="${c.tagline}"
+                      aria-label="${c.name}"
+                      aria-current="${c.id === character.id ? "true" : "false"}"
+                    >
+                      ${avatarMarkup(c, "chat-rail__avatar", "chat-rail__emoji")}
+                    </button>
+                  </li>
+                `,
+                ).join("")}
+              </ul>
+            </nav>
+            <div class="chat-main">
+              <div class="chat-toolbar">
+                <span>${hasStoredHistory(character.id) ? "Historial guardado" : ""}</span>
+                <button id="clear-history-btn">Borrar historial</button>
+              </div>
+              <main id="messages-area" role="log" aria-live="polite"></main>
+              <div class="input-group">
+                  <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1" aria-label="Mensaje para ${character.name}"></textarea>
+                   <button id="generate-btn">Enviar</button>
+              </div>
             </div>
-            <main id="messages-area" role="log" aria-live="polite"></main>
-            <div class="input-group">
-                <textarea id="topic-input" placeholder="Ej: hola ${character.name}" maxlength="200" rows="1" aria-label="Mensaje para ${character.name}"></textarea>
-                 <button id="generate-btn">Enviar</button>
-            </div>
+            <aside class="chat-lore-panel" aria-label="Sobre ${character.name}">
+              <div class="chat-lore-panel__header">
+                ${avatarMarkup(character, "chat-lore-panel__avatar", "chat-lore-panel__emoji")}
+                <h2>${character.name}</h2>
+                <p class="chat-lore-panel__tagline">${character.tagline}</p>
+              </div>
+              <div class="lore-section">
+                <button type="button" class="lore-section__trigger" aria-expanded="true" aria-controls="lore-history">
+                  Historia <span class="lore-section__icon" aria-hidden="true">▾</span>
+                </button>
+                <div id="lore-history" class="lore-section__content">
+                  <p>${character.lore}</p>
+                </div>
+              </div>
+              <div class="lore-section">
+                <button type="button" class="lore-section__trigger" aria-expanded="true" aria-controls="lore-prompts">
+                  Puedes preguntarle <span class="lore-section__icon" aria-hidden="true">▾</span>
+                </button>
+                <div id="lore-prompts" class="lore-section__content">
+                  <ul class="lore-section__prompts">
+                    ${character.suggestedPrompts.map((q) => `<li><button type="button" class="lore-section__prompt">${q}</button></li>`).join("")}
+                  </ul>
+                </div>
+              </div>
+              <a href="/personaje/${character.id}" data-href="/personaje/${character.id}" class="chat-lore-panel__link">Ver página completa →</a>
+            </aside>
           </div>
         </div>
         `;
@@ -214,22 +272,60 @@ function renderChat() {
   document.getElementById("clear-history-btn").addEventListener("click", () => {
     clearHistory();
     renderChat();
+    showToast("Historial borrado");
   });
 
-  document.querySelectorAll(".chat-sidebar__item").forEach((item) => {
-    function selectSidebarCharacter() {
-      if (item.dataset.id === character.id) return;
-      setActiveCharacter(item.dataset.id);
+  // Tooltip del rail: un único elemento position:fixed reposicionado por JS
+  // según el avatar activo (un ::after dentro del riel quedaba recortado
+  // por el overflow-y:auto del contenedor).
+  let railTooltip = document.getElementById("rail-tooltip");
+  if (!railTooltip) {
+    railTooltip = document.createElement("div");
+    railTooltip.id = "rail-tooltip";
+    railTooltip.className = "chat-rail__tooltip";
+    railTooltip.innerHTML = "<strong></strong><span></span>";
+    document.body.appendChild(railTooltip);
+  }
+
+  function showRailTooltip(btn) {
+    const rect = btn.getBoundingClientRect();
+    railTooltip.querySelector("strong").textContent = btn.dataset.name;
+    railTooltip.querySelector("span").textContent = btn.dataset.tagline;
+    railTooltip.style.top = `${rect.top + rect.height / 2}px`;
+    railTooltip.style.left = `${rect.right}px`;
+    railTooltip.classList.add("chat-rail__tooltip--visible");
+  }
+
+  function hideRailTooltip() {
+    railTooltip.classList.remove("chat-rail__tooltip--visible");
+  }
+
+  document.querySelectorAll(".chat-rail__item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.id === character.id) return;
+      setActiveCharacter(btn.dataset.id);
       renderChat();
-    }
+    });
+    btn.addEventListener("mouseenter", () => showRailTooltip(btn));
+    btn.addEventListener("mouseleave", hideRailTooltip);
+    btn.addEventListener("focus", () => showRailTooltip(btn));
+    btn.addEventListener("blur", hideRailTooltip);
+  });
 
-    item.addEventListener("click", selectSidebarCharacter);
+  // Acordeón del panel de historia: patrón disclosure (aria-expanded +
+  // atributo hidden en el contenido), sin librería.
+  document.querySelectorAll(".lore-section__trigger").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      const expanded = trigger.getAttribute("aria-expanded") === "true";
+      trigger.setAttribute("aria-expanded", String(!expanded));
+      document.getElementById(trigger.getAttribute("aria-controls")).hidden =
+        expanded;
+    });
+  });
 
-    item.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectSidebarCharacter();
-      }
+  document.querySelectorAll(".lore-section__prompt").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      handleSendMessage(btn.textContent, messagesEl);
     });
   });
 }
@@ -251,7 +347,7 @@ function renderGallery() {
                     ${avatarMarkup(c, "character-card__avatar", "character-card__emoji")}
                     <h3>${c.name}</h3>
                     <p>${c.tagline}</p>
-                    <a href="/personaje/${c.id}" data-href="/personaje/${c.id}" class="character-card__lore-link">📖 Su historia</a>
+                    <a href="/personaje/${c.id}" data-href="/personaje/${c.id}" class="character-card__lore-link">Su historia</a>
                 </div>
             `,
             ).join("")}

@@ -3,6 +3,8 @@ export const CHARACTERS = [
     id: "gandalf",
     name: "Gandalf el Gris",
     emoji: "🧙🏼‍♂️",
+    accent: "#5c6b7a",
+    accentRgb: "92, 107, 122",
     tagline: "Un mago itinerante, guía de la Comunidad del Anillo.",
     lore: "Uno de los cinco Istari enviados a la Tierra Media para oponerse a Sauron sin imponer su voluntad por la fuerza. Cayó luchando contra el Balrog de Moria y regresó transformado en Gandalf el Blanco. Su fe en los pequeños —hobbits, sobre todo— cambió el curso de la guerra.",
     suggestedPrompts: [
@@ -15,6 +17,8 @@ export const CHARACTERS = [
     id: "gollum",
     name: "Gollum",
     emoji: "🫣",
+    accent: "#5c6b3a",
+    accentRgb: "92, 107, 58",
     tagline: "Antiguo hobbit, obsesionado con su tesoro.",
     lore: "Antes fue Sméagol, un hobbit del Río Grande que asesinó a su primo por poseer el Anillo Único. Quinientos años de posesión lo consumieron hasta quedar dividido entre el odio y la lástima por sí mismo. Fue él, sin quererlo, quien terminó por destruir el Anillo en el Monte del Destino.",
     suggestedPrompts: [
@@ -27,6 +31,8 @@ export const CHARACTERS = [
     id: "aragorn",
     name: "Aragorn",
     emoji: "🗡️",
+    accent: "#7a3b30",
+    accentRgb: "122, 59, 48",
     tagline: "Heredero de Isildur, futuro Rey de Gondor.",
     lore: "Descendiente de Isildur, criado en secreto en Rivendel bajo el nombre de Estel. Vivió décadas como Montaraz protegiendo fronteras que nadie agradecía, antes de reclamar su derecho al trono de Gondor y Arnor. Su espada, reforjada, lleva el nombre de Andúril, la Llama del Oeste.",
     suggestedPrompts: [
@@ -39,6 +45,8 @@ export const CHARACTERS = [
     id: "bilbo",
     name: "Bilbo Bolsón",
     emoji: "📖",
+    accent: "#8a6a3a",
+    accentRgb: "138, 106, 58",
     tagline: "Aventurero retirado y cronista de la Comarca.",
     lore: "Hobbit respetable de Bolsón Cerrado hasta que Gandalf lo arrastró a una aventura con trece enanos. Encontró el Anillo Único por accidente en las Montañas Nubladas, sin saber lo que realmente era. Pasó sus últimos años en Rivendel, escribiendo el libro que se convertiría en el registro de esta historia.",
     suggestedPrompts: [
@@ -51,6 +59,8 @@ export const CHARACTERS = [
     id: "legolas",
     name: "Legolas",
     emoji: "🏹",
+    accent: "#3f6b52",
+    accentRgb: "63, 107, 82",
     tagline: "Príncipe élfico, arquero del Bosque Negro.",
     lore: "Príncipe del Reino del Bosque Negro, hijo del rey Thranduil. Se unió a la Comunidad del Anillo como representante de los Elfos, portando arco y una vista capaz de distinguir jinetes a kilómetros de distancia. Su amistad con Gimli, nacida de la rivalidad, se volvió una de las más inesperadas de la Tercera Edad.",
     suggestedPrompts: [
@@ -63,6 +73,8 @@ export const CHARACTERS = [
     id: "gimli",
     name: "Gimli",
     emoji: "🪓",
+    accent: "#8a4a2f",
+    accentRgb: "138, 74, 47",
     tagline: "Enano guerrero, orgulloso de su linaje.",
     lore: "Enano de la línea de Durin, hijo de Glóin —uno de los trece enanos que acompañaron a Bilbo en 'El Hobbit'—. Desconfiaba profundamente de los elfos al unirse a la Comunidad, pero terminó forjando un lazo inquebrantable con Legolas. Fue de los pocos en cruzar los Senderos de los Muertos sin flaquear.",
     suggestedPrompts: [
@@ -75,6 +87,8 @@ export const CHARACTERS = [
     id: "saruman",
     name: "Saruman el Blanco",
     emoji: "🔮",
+    accent: "#6b5f7a",
+    accentRgb: "107, 95, 122",
     tagline: "Istari caído, al servicio de la oscuridad.",
     lore: "Alguna vez cabeza del Concilio Blanco y el más sabio de los Istari, hasta que su estudio de Sauron se convirtió en fascinación, y su fascinación en traición. Desde Isengard crió a los Uruk-hai y quebró los bosques de Fangorn para alimentar sus forjas. Su voz, capaz de persuadir a reyes, terminó siendo su única arma cuando perdió todo lo demás.",
     suggestedPrompts: [
