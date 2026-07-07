@@ -132,7 +132,11 @@ export async function handleSendMessage(text, container) {
     saveHistoryToStorage();
   } catch (error) {
     hideTypingIndicator(typingEl);
-    appendMessageToDOM("ai", `⚠️ ${error.message}`, container);
+    appendMessageToDOM(
+      "ai",
+      `🔮 El Palantír no está viendo con claridad ahora mismo (${error.message})`,
+      container,
+    );
     messages.pop();
   }
 }
