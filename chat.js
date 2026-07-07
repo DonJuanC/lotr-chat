@@ -132,9 +132,12 @@ export async function handleSendMessage(text, container) {
     saveHistoryToStorage();
   } catch (error) {
     hideTypingIndicator(typingEl);
+    // error.status solo existe si la falla vino de una respuesta HTTP no-ok
+    // (ver sendToAI); un error de red (sin conexión, etc.) no tiene código.
+    const code = error.status ? ` [${error.status}]` : "";
     appendMessageToDOM(
       "ai",
-      `🔮 El Palantír no está viendo con claridad ahora mismo (${error.message})`,
+      `🔮 El Palantír no está viendo con claridad ahora mismo${code} (${error.message})`,
       container,
     );
     messages.pop();
@@ -157,19 +160,23 @@ function hideTypingIndicator(el) {
 }
 
 export async function sendToAI(messagesToSend) {
+  const payload = {
+    messages: messagesToSend,
+    characterId: activeCharacterId,
+  };
+
   const response = await fetch("/api/functions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      messages: messagesToSend,
-      characterId: activeCharacterId,
-    }),
+    body: JSON.stringify(payload),
   });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || `Error HTTP ${response.status}`);
+    const error = new Error(data.error || `Error HTTP ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   return data;

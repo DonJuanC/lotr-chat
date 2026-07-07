@@ -183,6 +183,7 @@ function renderChat() {
         <div class="chat-layout" style="--character-accent: ${character.accent}; --character-accent-rgb: ${character.accentRgb};">
           <h1 class="sr-only">${character.name}</h1>
           <header>
+            ${avatarMarkup(character, "chat-header__avatar", "chat-header__emoji")}
             ${character.name}
             <a href="/personaje/${character.id}" data-href="/personaje/${character.id}" class="chat-header__lore-link">Historia</a>
           </header>
@@ -211,7 +212,7 @@ function renderChat() {
             <div class="chat-main">
               <div class="chat-toolbar">
                 <span>${hasStoredHistory(character.id) ? "Historial guardado" : ""}</span>
-                <button id="clear-history-btn">Borrar historial</button>
+                <button id="clear-history-btn" aria-label="Borrar historial">🗑️</button>
               </div>
               <main id="messages-area" role="log" aria-live="polite"></main>
               <div class="input-group">
@@ -373,7 +374,11 @@ function renderGallery() {
     </section>
 `;
 
-  document.querySelectorAll(".character-card").forEach((card) => {
+  // Se consulta una sola vez y se reusa abajo (click/teclado y scroll-reveal)
+  // en vez de volver a preguntarle al DOM la misma lista dos veces.
+  const cards = document.querySelectorAll(".character-card");
+
+  cards.forEach((card) => {
     function selectCharacter() {
       setActiveCharacter(card.dataset.id);
       navigateTo("/chat");
@@ -402,7 +407,6 @@ function renderGallery() {
   // pantalla, sin escuchar el evento "scroll" a mano. Si el navegador no
   // soporta la API, esta clase nunca se agrega y las cards quedan visibles.
   if ("IntersectionObserver" in window) {
-    const cards = document.querySelectorAll(".character-card");
     cards.forEach((card) => card.classList.add("reveal-pending"));
 
     const observer = new IntersectionObserver(
