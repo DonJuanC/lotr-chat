@@ -2,7 +2,7 @@
 
 SPA para chatear con 7 personajes de la Tierra Media (Gandalf, Gollum, Aragorn, Bilbo, Legolas, Gimli y Saruman) usando Google Gemini AI. Construido para afianzar diseño responsive mobile-first, SPA con History API, JavaScript asíncrono y consumo de APIs, integración con inteligencia artificial, y despliegue con Serverless Functions.
 
-**Autor:** Juan Camilo Castellanos — [github.com/DonJuanC](https://github.com/DonJuanC)
+**Autor:** JuanCamilo Castellanos — [github.com/DonJuanC](https://github.com/DonJuanC)
 
 **Demo en vivo:** https://lotr-chat.vercel.app
 
@@ -24,13 +24,12 @@ Cada personaje tiene un system prompt propio (definido en `api/functions.js`) co
 
 - SPA con routing propio vía History API (`/home`, `/chat`, `/about`, `/personaje/:id`)
 - Historia (lore) individual por personaje, con prompts sugeridos para arrancar la conversación
-- Vista de chat con rail de personajes (con tooltip de nombre + descripción al pasar el cursor) y panel lateral de historia con secciones plegables
-- Color de acento propio por personaje, reflejado en el rail, el panel de historia y las burbujas de la IA
-- Persistencia de conversaciones en `localStorage`, por personaje, con botón para borrar historial
-- Modo oscuro / claro con transición suave entre temas y confirmación visual (toast) accesible vía `aria-live`
+- Layout de dos paneles en desktop (galería de personajes + chat activo, tipo WhatsApp Web)
+- Persistencia de conversaciones en `localStorage`, por personaje
+- Modo oscuro / claro
 - Timestamps, copiar respuesta al portapapeles, envío con Enter
 - Diseño temático: tipografía Cinzel/EB Garamond, paleta pergamino/dorado, mapa de fondo, glassmorphism en nav y toolbar, scroll-reveal con `IntersectionObserver`
-- Accesible: auditado y corregido contra WCAG 2.1 AA (navegación por teclado, `aria-live` en el chat y en confirmaciones de estado, contraste de color, labels, tamaños táctiles, tooltips visibles en hover/foco)
+- Accesible: auditado y corregido contra WCAG 2.1 AA (navegación por teclado, `aria-live` en el chat, contraste de color, labels, tamaños táctiles)
 
 ## Stack técnico
 
@@ -66,22 +65,6 @@ Y los tests con:
 npm run test:run
 ```
 
-## Cómo desplegar a Vercel
-
-```bash
-npm install -g vercel
-vercel login
-vercel
-```
-
-En el dashboard de Vercel (Settings → Environment Variables) agrega `GEMINI_API_KEY` con tu API key real, tanto para Production como para Preview. Después de guardarla, hace falta un redeploy para que la función serverless la tome:
-
-```bash
-vercel --prod
-```
-
-Verifica que el chat funcione en la URL pública: si `GEMINI_API_KEY` no está configurada, `api/functions.js` responde con un error controlado en vez de exponer la key o romper silenciosamente.
-
 ## Uso de IA en este proyecto
 
 Este proyecto fue construido usando Claude como tutor de programación: cada línea de código fue escrita por mí, guiado paso a paso — explicaciones de por qué cada archivo/decisión existe, corrección de errores propios, y debugging conjunto de problemas reales (migración de SDK de Gemini deprecado, cambios de cuota gratuita de Google, bugs de sintaxis, rutas relativas rotas, accesibilidad WCAG). La IA no escribió el proyecto: lo guie yo, con acompañamiento explicativo en cada paso.
@@ -91,19 +74,19 @@ Registro detallado (prompts, decisiones, iteraciones) disponible en Notion: [Uso
 ## Capturas
 
 **Galería (inicio)**
-![Galería de personajes](screenshots/01-inicio.png)
+![Galería de personajes](screenshots/01-inicio-mockup.png)
 
 **Chat en curso**
-![Chat con un personaje](screenshots/02-chat.png)
+![Chat con un personaje](screenshots/02-chat-mockup.png)
 
 **Historia de un personaje**
-![Página de historia](screenshots/03-historia.png)
+![Página de historia](screenshots/03-historia-mockup.png)
 
 **Modo oscuro**
-![Modo oscuro](screenshots/04-modo-oscuro.png)
+![Modo oscuro](screenshots/04-modo-oscuro-mockup.png)
 
 **Vista mobile**
-![Vista mobile](screenshots/05-mobile.png)
+![Vista mobile](screenshots/05-mobile-mockup.png)
 
 ## Disclaimer
 
