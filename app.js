@@ -43,12 +43,29 @@ function avatarMarkup(character, avatarClass, emojiClass) {
   `;
 }
 
+// Normaliza rutas con barra final ("/chat/" -> "/chat") para que coincidan
+// con las claves exactas del objeto `routes`. La raíz ("/") se deja intacta:
+// sacarle la barra la dejaría vacía, que no es una ruta válida.
+function normalizePath(path) {
+  if (path.length > 1 && path.endsWith("/")) {
+    return path.slice(0, -1);
+  }
+  return path;
+}
+
 function router() {
   const app = document.getElementById("app");
   app.classList.add("is-transitioning");
 
   setTimeout(() => {
-    const path = window.location.pathname;
+    const path = normalizePath(window.location.pathname);
+
+    // Si venía con barra final (URL escrita a mano, bookmark, etc.), se
+    // limpia también la barra de direcciones para que quede la forma
+    // canónica de la ruta.
+    if (path !== window.location.pathname) {
+      history.replaceState(null, "", path + window.location.search);
+    }
 
     if (path.startsWith("/personaje/")) {
       const characterId = path.split("/personaje/")[1];
@@ -63,6 +80,7 @@ function router() {
 }
 
 function navigateTo(path) {
+  path = normalizePath(path);
   if (window.location.pathname === path) return;
   history.pushState(null, "", path);
   router();
