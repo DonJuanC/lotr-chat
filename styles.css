@@ -896,6 +896,20 @@ section {
   .message {
     max-width: 65%;
   }
+
+  nav {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  nav a {
+    padding: 0.5rem 0.25rem;
+    font-size: 1rem;
+  }
+
+  nav a:not(:last-of-type)::after {
+    margin-left: 1rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -957,8 +971,9 @@ section {
    sólido. -webkit- es el prefijo que necesita Safari para lo mismo. */
 nav {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
   margin: 1rem 1rem 0;
   border-radius: 0.75rem;
   flex-shrink: 0;
@@ -970,16 +985,18 @@ nav {
 nav a {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 0.25rem;
+  padding: 0.4rem 0.15rem;
   color: #f4e9d8;
   text-decoration: none;
   font-family: var(--font-heading);
   letter-spacing: 0.05em;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 nav a:not(:last-of-type)::after {
   content: "❖";
-  margin-left: 1rem;
+  margin-left: 0.5rem;
   color: var(--color-accent);
 }
 
