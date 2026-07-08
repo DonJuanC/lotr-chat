@@ -129,6 +129,57 @@ function setupThemeToggle() {
   });
 }
 
+// Menú de navegación: botón de hamburguesa + panel desplegable, en vez de
+// los 3 links horizontales que se apretaban contra el toggle de tema en
+// mobile. Se abre/cierra con click (no hover) para que funcione igual en
+// pantallas táctiles, que es justamente donde estaba el problema.
+function setupNavMenu() {
+  const btn = document.getElementById("nav-menu-btn");
+  const panel = document.getElementById("nav-menu-panel");
+
+  function closeMenu() {
+    panel.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "Abrir menú");
+    btn.textContent = "☰";
+  }
+
+  function openMenu() {
+    panel.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    btn.setAttribute("aria-label", "Cerrar menú");
+    btn.textContent = "✕";
+  }
+
+  btn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (panel.hidden) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  });
+
+  // Un link del panel ya navega solo (setupLinkInterception escucha
+  // cualquier <a> con href), acá solo hace falta cerrar el panel después.
+  panel.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.hidden && !event.target.closest(".nav-menu")) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !panel.hidden) {
+      closeMenu();
+      btn.focus();
+    }
+  });
+}
+
 function renderAbout() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -158,6 +209,7 @@ function renderAbout() {
           <div class="bento-item bento-item--credits">
             <h3>Créditos</h3>
             <p>JuanCamilo Castellanos — <a href="https://github.com/DonJuanC" target="_blank" rel="noopener noreferrer">github.com/DonJuanC</a></p>
+            <p><a href="https://github.com/DonJuanC/lotr-chat" target="_blank" rel="noopener noreferrer">Repositorio del proyecto en GitHub</a></p>
             <p class="bento-disclaimer">Proyecto académico sin fines comerciales. Los personajes y el universo de la Tierra Media son propiedad de The Tolkien Estate y sus respectivos titulares de derechos; este proyecto no está afiliado ni respaldado por ellos.</p>
           </div>
         </div>
@@ -457,4 +509,5 @@ function renderLore(characterId) {
 
 setupLinkInterception();
 setupThemeToggle();
+setupNavMenu();
 router();

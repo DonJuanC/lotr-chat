@@ -14,9 +14,23 @@
   </head>
   <body>
     <nav>
-      <a href="/home" data-href="/home">Inicio</a>
-      <a href="/chat" data-href="/chat">Chat</a>
-      <a href="/about" data-href="/about">Acerca de</a>
+      <div class="nav-menu">
+        <button
+          id="nav-menu-btn"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="nav-menu-panel"
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
+        <div id="nav-menu-panel" class="nav-menu__panel" hidden>
+          <a href="/home" data-href="/home">Inicio</a>
+          <a href="/chat" data-href="/chat">Chat</a>
+          <a href="/about" data-href="/about">Acerca de</a>
+        </div>
+      </div>
       <button id="theme-toggle">🌙</button>
     </nav>
 

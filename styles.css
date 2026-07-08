@@ -896,20 +896,6 @@ section {
   .message {
     max-width: 65%;
   }
-
-  nav {
-    gap: 1rem;
-    padding: 1rem;
-  }
-
-  nav a {
-    padding: 0.5rem 0.25rem;
-    font-size: 1rem;
-  }
-
-  nav a:not(:last-of-type)::after {
-    margin-left: 1rem;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -969,35 +955,83 @@ section {
 /* Glassmorphism: fondo semitransparente (--color-glass-bg) + backdrop-filter
    desenfoca lo que queda detrás (el mapa), en vez de taparlo con un color
    sólido. -webkit- es el prefijo que necesita Safari para lo mismo. */
+/* Ya no es una "barra": con solo 2 botones adentro (menú y tema), la caja de
+   fondo glassmorphism sobraba. Quedan los dos íconos flotando directo sobre
+   el mapa, sin fondo ni blur detrás. */
 nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0.5rem;
-  margin: 1rem 1rem 0;
-  border-radius: 0.75rem;
+  justify-content: space-between;
+  padding: 1rem;
   flex-shrink: 0;
-  background: var(--color-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
-nav a {
+/* El menú de navegación (Inicio/Chat/Acerca de) vive detrás de un botón de
+   hamburguesa a todos los anchos: antes los 3 links + separadores "❖"
+   competían por espacio con el toggle de tema y se partían en mobile (ver
+   Error 8 en la guía de Notion). */
+.nav-menu {
+  position: relative;
+}
+
+#nav-menu-btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.4rem 0.15rem;
-  color: #f4e9d8;
-  text-decoration: none;
-  font-family: var(--font-heading);
-  letter-spacing: 0.05em;
-  font-size: 0.8rem;
-  white-space: nowrap;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  border-radius: 50%;
+  width: 2.75rem;
+  height: 2.75rem;
+  /* var(--color-text), no un cream fijo: el botón ya no vive sobre una barra
+     oscura, sino directo sobre el fondo del body, que cambia con el tema. */
+  color: var(--color-text);
+  font-size: 1.1rem;
+  cursor: pointer;
 }
 
-nav a:not(:last-of-type)::after {
-  content: "❖";
-  margin-left: 0.5rem;
-  color: var(--color-accent);
+/* [hidden] tiene que ir después y explícito: si .nav-menu__panel ya trae
+   display:flex, esa regla de autor le gana al display:none que el navegador
+   aplica por el atributo hidden, y el panel queda visible siempre. */
+.nav-menu__panel[hidden] {
+  display: none;
+}
+
+.nav-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 170px;
+  background: var(--color-header-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.6rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  z-index: 70;
+}
+
+.nav-menu__panel a {
+  padding: 0.8rem 1.1rem;
+  color: var(--color-header-text);
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-menu__panel a:last-child {
+  border-bottom: none;
+}
+
+.nav-menu__panel a:hover,
+.nav-menu__panel a:focus-visible {
+  background: var(--color-accent);
+  color: var(--color-header-bg);
 }
 
 #theme-toggle {
@@ -1062,6 +1096,14 @@ nav a:not(:last-of-type)::after {
   font-family: var(--font-heading);
   font-size: 0.85rem;
   letter-spacing: 0.03em;
+  /* Sin esto, en pantallas angostas el texto puede partirse en dos líneas y
+     la píldora (border-radius: 999px) queda deformada — mismo bug que tenía
+     el panel del menú. max-width + ellipsis es la red de seguridad si algún
+     mensaje futuro fuera más largo de lo que cabe. */
+  white-space: nowrap;
+  max-width: calc(100vw - 2rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   opacity: 0;
   pointer-events: none;
@@ -1164,6 +1206,13 @@ nav a:not(:last-of-type)::after {
       "stack"
       "characters"
       "credits";
+  }
+
+  /* En desktop los prompts sugeridos van en fila y hacen wrap (quedan 2 y
+     luego 1 suelto abajo, disparejo). En mobile, uno debajo del otro. */
+  .suggested-prompts {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
