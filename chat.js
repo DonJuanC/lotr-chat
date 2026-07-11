@@ -47,8 +47,19 @@ export function clearHistory() {
   }
 }
 
-let activeCharacterId = localStorage.getItem(ACTIVE_CHARACTER_KEY) || "gandalf";
-let messages = loadHistoryFromStorage(activeCharacterId);
+// Arrancan con un valor por defecto, no leyendo localStorage todavía: eso
+// pasaba antes al cargar el módulo, lo que rompía cualquier test (o
+// cualquier otro contexto sin DOM) que solo quisiera importar una función
+// de acá, como sendToAI, sin tener localStorage disponible.
+let activeCharacterId = "gandalf";
+let messages = [];
+
+// Inicialización explícita: recién acá se toca localStorage. app.js la
+// llama una sola vez al arrancar, antes del primer render.
+export function initChat() {
+  activeCharacterId = localStorage.getItem(ACTIVE_CHARACTER_KEY) || "gandalf";
+  messages = loadHistoryFromStorage(activeCharacterId);
+}
 
 export function setActiveCharacter(characterId) {
   activeCharacterId = characterId;

@@ -5,6 +5,7 @@ import {
   getActiveCharacterId,
   clearHistory,
   hasStoredHistory,
+  initChat,
 } from "./chat.js";
 import { CHARACTERS } from "./characters.js";
 
@@ -507,6 +508,7 @@ function renderLore(characterId) {
     });
 }
 
+initChat();
 setupLinkInterception();
 setupThemeToggle();
 setupNavMenu();
